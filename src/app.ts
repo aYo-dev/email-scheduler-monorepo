@@ -44,7 +44,3 @@ app.listen(
 );
 
 export const server = app;
-
-export default {
-  app,
-};
