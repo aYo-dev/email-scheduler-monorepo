@@ -7,10 +7,10 @@ export const create = async (req: Request, res: Response): Promise<Response> => 
   const feedback =  await new EmailValidator(emailData).validate();
 
   if(feedback.length > 0) {
-    return res.send(400).json(feedback);
+    return res.status(400).send({data: feedback});
   }
 
-  try{
+  try {
     const result = await Email.create(emailData);
     return res.status(200).send({data: result});
   } catch(e) {
