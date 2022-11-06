@@ -1,9 +1,21 @@
-import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { equals } from "ramda";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useApi } from "../hooks/useApi";
 import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
+
 
 type EndOptions = 'never' | 'on' | 'after';
 
@@ -12,7 +24,36 @@ export const EmailScheduleForm = () => {
   const [end, setEnd] = useState('never');
   const [receiver, setReceiver] = useState('');
   const [content, setContent] = useState('');
-  const [sendingType, setSendingType] = useState('once');
+  const [sendingType, setSendingType] = useState('now');
+  const [when, setWhen] = useState(null);
+
+  const {
+    isLoading,
+    isError, // show message on error
+    sendRequest,
+    responseData,
+  } = useApi(null);
+
+  const onSubmit = () => {
+    const requestData = {
+      receiver,
+      content,
+      sendingType,
+      when,
+    };
+    // TODO: validate requestData first
+    sendRequest({
+      url: `http://localhost:3006/email`,
+      method: 'post',
+      data: requestData,
+    });
+  }
+
+  useEffect(() => {
+    // TODO: show proper message
+    console.log('response', responseData);
+    // TODO: reset the form
+  }, [responseData]);
 
   const handleDayChange = (selectedDays: string[]) => {
     selectDays(selectedDays);
@@ -22,7 +63,7 @@ export const EmailScheduleForm = () => {
 
   return (
     <>
-      <Stack spacing={2} padding={2} sx={{maxWidth: '400px'}}>
+      <Stack spacing={2}>
         <TextField
           label="Receiver"
           value={receiver}
@@ -38,16 +79,18 @@ export const EmailScheduleForm = () => {
           rows={6}
         />
       </Stack>
-      <Box>
+      <Box marginTop={2}>
         <FormControl>
           <FormLabel id="demo-radio-buttons-group-label">Send it</FormLabel>
           <RadioGroup
             row
-            defaultValue="once"
+            defaultValue="now"
             name="send-it"
             onChange={(v) => setSendingType(v.target.value)}
           >
-            <FormControlLabel value="once" control={<Radio />} label="Once" />
+
+            <FormControlLabel value="now" control={<Radio />} label="Now" />
+            <FormControlLabel value="schedule" control={<Radio />} label="Schedule" />
             <FormControlLabel value="recurrently" control={<Radio />} label="Recurrently" />
           </RadioGroup>
         </FormControl>
@@ -57,6 +100,9 @@ export const EmailScheduleForm = () => {
         <Repeat handleChange={handleDayChange} values={selectedDays}/>
         <EndSelect onEndTypeChange={setEnd}/>
       </Box>}
+      <Box marginTop={2}>
+        <Button variant="outlined" onClick={onSubmit}>Create</Button>
+      </Box>
     </>
   );
 }
