@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "airbnb-typescript",
+    "prettier"
+  ],
+    "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "import/prefer-default-export": 0,
+    "import/no-cycle": 0,
+    "@typescript-eslint/lines-between-class-members": 0
+  }
+}
