@@ -1,8 +1,4 @@
 import { Schema, model } from 'mongoose';
-
-import {
-  isEmail,
-} from 'class-validator';
 import { EmailData } from '../interfaces';
 
 export const emailSchema = new Schema({
@@ -15,12 +11,24 @@ export const emailSchema = new Schema({
     lowercase: true,
     trim: true,
     required: true,
-    validate: [isEmail, 'Please fill a valid email address'],
   },
-  schedule: {
+  sendingType: {
     type: String,
-    required: true,
+    default: 'now',
+    enum: ['schedule', 'every', 'now']
   },
+  sendingTypeOptions: {
+    when: Date,
+    occurences : {
+      type: Number,
+    },
+    end: Date,
+  },
+  status: {
+    type: String,
+    default: 'new',
+    enum: ['new', 'scheduled', 'completed']
+  }
 });
 
-export const Email = model<EmailData>('Email', emailSchema);
+export const Email = model<EmailData>('Email', emailSchema, 'emails');
