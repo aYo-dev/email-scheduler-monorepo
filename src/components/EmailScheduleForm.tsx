@@ -12,22 +12,54 @@ import {
   Typography,
 } from "@mui/material";
 import { equals } from "ramda";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useApi } from "../hooks/useApi";
 import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
 
+enum Actions {
+  update = 'UPDATE',
+  reset = 'RESET',
+}
 
-type EndOptions = 'never' | 'on' | 'after';
+type Action = {
+  type: Actions;
+  payload?: Record<string, string | string[] | null>
+}
+
+const formInitialState = {
+  selectedDays: [''],
+  endType: 'never',
+  end: '',
+  receiver: '',
+  content: '',
+  sendingType: 'now',
+  when: null,
+}
+
+function reducer(state: typeof formInitialState, action: Action) {
+  switch (action.type) {
+    case Actions.update:
+      return ({
+        ...state,
+        ...action.payload,
+      });
+    case Actions.reset:
+      return formInitialState;
+    default:
+      throw new Error('Invalid action');
+  }
+}
+
 
 export const EmailScheduleForm = () => {
-  const [selectedDays, selectDays] = useState(['']);
-  const [end, setEnd] = useState('never');
-  const [receiver, setReceiver] = useState('');
-  const [content, setContent] = useState('');
-  const [sendingType, setSendingType] = useState('now');
-  const [when, setWhen] = useState(null);
+
+  const [state, dispatch] = useReducer(reducer, formInitialState);
+
+  // useEffect(() => {
+  //   console.log('state change', state);
+  // }, [state])
 
   const {
     isLoading,
@@ -37,51 +69,50 @@ export const EmailScheduleForm = () => {
   } = useApi(null);
 
   const onSubmit = () => {
-    const requestData = {
-      receiver,
-      content,
-      sendingType,
-      when,
-    };
     // TODO: validate requestData first
     sendRequest({
       url: `http://localhost:3006/email`,
       method: 'post',
-      data: requestData,
+      data: state,
     });
   }
 
   useEffect(() => {
     // TODO: show proper message
     console.log('response', responseData);
-    // TODO: reset the form
+    reset();
   }, [responseData]);
 
   const reset = () => {
+    dispatch({type: Actions.reset});
+  }
 
+  const setState = (payload: Action['payload']) => {
+    dispatch({type: Actions.update, payload });
   }
 
   const handleDayChange = (selectedDays: string[]) => {
-    selectDays(selectedDays);
+    setState({selectedDays});
   };
 
-  const isRecurrently = useMemo(() => equals(sendingType, 'recurrently'), [sendingType]);
-  const isSchedule = useMemo(() => equals(sendingType, 'schedule'), [sendingType]);
+  const isRecurrently = useMemo(() => equals(state.sendingType, 'recurrently'), [state.sendingType]);
+  const isSchedule = useMemo(() => equals(state.sendingType, 'schedule'), [state.sendingType]);
 
   return (
     <>
       <Stack spacing={2}>
         <TextField
           label="Receiver"
-          value={receiver}
-          onChange={(e) => setReceiver(e.target.value)}
+          value={state.receiver}
+          onChange={(e) => setState({receiver: e.target.value})}
           variant="outlined"
           sx={{width: '100%'}}
           type="email"
         />
         <TextField
           label="Email content"
-          onChange={(e) => setContent(e.target.value)}
+          value={state.content}
+          onChange={(e) => setState({content: e.target.value})}
           multiline
           rows={6}
         />
@@ -93,9 +124,8 @@ export const EmailScheduleForm = () => {
             row
             defaultValue="now"
             name="send-it"
-            onChange={(v) => setSendingType(v.target.value)}
+            onChange={(e) => setState({sendingType: e.target.value})}
           >
-
             <FormControlLabel value="now" control={<Radio />} label="Now" />
             <FormControlLabel value="schedule" control={<Radio />} label="Schedule" />
             <FormControlLabel value="recurrently" control={<Radio />} label="Recurrently" />
@@ -104,16 +134,16 @@ export const EmailScheduleForm = () => {
       </Box>
       {isRecurrently && <Box>
         <Typography>Repeat on:</Typography>
-        <Repeat handleChange={handleDayChange} values={selectedDays}/>
-        <EndSelect onEndTypeChange={setEnd}/>
+        <Repeat handleChange={handleDayChange} values={state.selectedDays}/>
+        <EndSelect onEndTypeChange={(endType) => setState({endType})}/>
       </Box>}
       {isSchedule && <Box>
         <DateTimePicker
           renderInput={(props) => <TextField {...props} />}
           label="DateTimePicker"
-          value={when}
+          value={state.when}
           onChange={(newValue) => {
-            setWhen(newValue);
+            setState({when: newValue});
           }}
         />
       </Box>}
