@@ -6,12 +6,14 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Snackbar,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { equals } from "ramda";
 import { useEffect, useMemo, useState } from "react";
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useApi } from "../hooks/useApi";
 import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
@@ -55,11 +57,16 @@ export const EmailScheduleForm = () => {
     // TODO: reset the form
   }, [responseData]);
 
+  const reset = () => {
+
+  }
+
   const handleDayChange = (selectedDays: string[]) => {
     selectDays(selectedDays);
   };
 
   const isRecurrently = useMemo(() => equals(sendingType, 'recurrently'), [sendingType]);
+  const isSchedule = useMemo(() => equals(sendingType, 'schedule'), [sendingType]);
 
   return (
     <>
@@ -99,6 +106,16 @@ export const EmailScheduleForm = () => {
         <Typography>Repeat on:</Typography>
         <Repeat handleChange={handleDayChange} values={selectedDays}/>
         <EndSelect onEndTypeChange={setEnd}/>
+      </Box>}
+      {isSchedule && <Box>
+        <DateTimePicker
+          renderInput={(props) => <TextField {...props} />}
+          label="DateTimePicker"
+          value={when}
+          onChange={(newValue) => {
+            setWhen(newValue);
+          }}
+        />
       </Box>}
       <Box marginTop={2}>
         <Button variant="outlined" onClick={onSubmit}>Create</Button>
