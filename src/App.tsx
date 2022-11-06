@@ -1,15 +1,22 @@
-import React from 'react';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import { EmailScheduleForm } from './components/EmailScheduleForm';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Header from './components/Header';
+import Box from '@mui/material/Box';
+import { Grid } from '@mui/material';
 
 function App() {
   return (
     <div className="App">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Header />
-        <EmailScheduleForm />
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={8} sx={{margin: 4}}>
+                <EmailScheduleForm />
+            </Grid>
+          </Grid>
+        </Box>
       </LocalizationProvider>
     </div>
   );
