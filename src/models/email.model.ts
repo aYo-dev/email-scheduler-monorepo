@@ -14,12 +14,16 @@ export const emailSchema = new Schema({
   },
   sendingType: {
     type: String,
-    default: 'once',
-    enum: ['once', 'recurrently']
+    default: 'now',
+    enum: ['schedule', 'recurrently', 'now']
   },
-  when: {
-    type: String,
-    default: '48 10 * * 3,5',
+  sendingTypeOptions: {
+    when: Date,
+    occurrences : {
+      type: Number,
+    },
+    end: Date,
+    interval: String,
   },
   status: {
     type: String,
@@ -28,4 +32,4 @@ export const emailSchema = new Schema({
   }
 });
 
-export const Email = model<EmailData>('Email', emailSchema);
+export const Email = model<EmailData>('Email', emailSchema, 'emails');

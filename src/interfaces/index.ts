@@ -1,7 +1,14 @@
+import { Types } from "mongoose";
+
 export interface EmailData {
+  _id: Types.ObjectId,
   content: string;
   receiver: string;
-  schedule: string;
   sendingType: string;
-  when: string;
+  sendingTypeOptions: {
+    when: string;
+    interval: string;
+    occurrances: number;
+    end: Date;
+  };
 }
