@@ -7,9 +7,7 @@ import { SEND_EMAIL } from '../constants';
  * @param agenda - agenda instance
  */
 export const sendEmailDefinition = (agenda: Agenda) => {
-  console.log('sendEmailDefinition defined');
   agenda.define(SEND_EMAIL, {priority: 20}, async (job) => {
-    console.log(`send email to ${job.attrs.data.receiver}`);
     const sentEmail = await Email.updateOne(
       {_id: job.attrs.data._id},
       { $set: { status : 'completed' } },

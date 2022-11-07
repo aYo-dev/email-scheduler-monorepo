@@ -19,7 +19,10 @@ scheduler
     scheduler.start();
     console.log("Agenda started!")
   })
-  .on('error', () => console.log("Agenda connection error!"));
+  .on('error', () => console.log("Agenda connection error!"))
+  .on('success:send email', (job) => {
+    console.log(`Sent Email Successfully to ${job.attrs.data.receiver}`);
+  });
 
 jobs.forEach(job => job(scheduler));
 
