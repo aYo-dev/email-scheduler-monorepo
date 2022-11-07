@@ -1,6 +1,6 @@
 import { Email } from "../models/email.model";
 import { Agenda } from 'agenda';
-import { equals } from "ramda";
+import { equals, groupBy, pathOr } from "ramda";
 import { EmailData } from "../interfaces";
 import { SEND_EMAIL } from "../constants";
 
@@ -27,14 +27,32 @@ const jobsMap = {
 const createJob = (sendingType) => 
   jobsMap[sendingType];
 
+const extractEmailWithEndingTypeNow = (email: EmailData) => {
+  const sendingType = email.sendingType;
+  return equals(sendingType, 'now') ? 'forNow' : 'forLater';
+}
 
 export const scheduleEmailCampaign = (agenda: Agenda) => {
   agenda.define('schedule new email campaign', {priority: 20},  async (job) => {
     try {
       // get all new emails which still are not scheduled 
-      const newEmailsForDefinition = await Email.find({status: 'new'});
+      const newEmails = await Email.find({status: 'new'});
 
-      const scheduled = newEmailsForDefinition.map(async (el: EmailData) => {
+      // with higher priority are emails which should be send immediately
+      // also their workflow is different, their status must not be updated 
+      // to `scheduled` because they are send immediately and in this case 
+      // we don't need to do two db queries 
+      const result = groupBy(extractEmailWithEndingTypeNow, newEmails);  
+
+      // we need fallback variant because some of the groups could be empty
+      const forNow = pathOr([], ['forNow'], result);
+      const forLater = pathOr([], ['forLater'], result);
+
+      forNow.forEach(async (el: EmailData) => {
+        await createJob(el.sendingType)(el, agenda);
+      });
+
+      const scheduled = forLater.map(async (el: EmailData) => {
         await createJob(el.sendingType)(el, agenda);
     
         console.log('new email was scheduled', el.receiver);
@@ -48,7 +66,7 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
       }
 
       await Promise.all(scheduled).then(ids => {
-        // when they are successfully scheduled their status must be changed to `scheduled`
+        // when emails are successfully scheduled their status must be changed to `scheduled`
         Email.updateMany(
           { _id: { $in: ids } },
           { $set: { status : 'scheduled' } },
