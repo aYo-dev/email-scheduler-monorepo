@@ -2,7 +2,7 @@ import { Email } from "../models/email.model";
 import { Agenda } from 'agenda';
 import { equals, groupBy, pathOr } from "ramda";
 import { EmailData } from "../interfaces";
-import { SEND_EMAIL } from "../constants";
+import { SEND_EMAIL, SEND_EMAIL_RECURRENTLY } from "../constants";
 
 const scheduleEmail = async ({_id, receiver, content, sendingTypeOptions}: EmailData, agenda: Agenda) =>
   agenda.schedule(sendingTypeOptions.when, SEND_EMAIL, { _id, receiver, content});
@@ -10,12 +10,12 @@ const scheduleEmail = async ({_id, receiver, content, sendingTypeOptions}: Email
 const sendNow = async ({_id, receiver, content}: EmailData, agenda: Agenda) => 
   agenda.now(SEND_EMAIL, { _id, receiver, content});
 
-const sendRecurrently = async ({_id, receiver, content, sendingTypeOptions}: EmailData, agenda: Agenda) => {
-  agenda.every(
-    sendingTypeOptions.interval,
-    SEND_EMAIL,
-    { _id, receiver, content},
-    {endDate: sendingTypeOptions.end});
+const sendRecurrently = async (data: EmailData, agenda: Agenda) => {
+  const job = agenda.create(SEND_EMAIL_RECURRENTLY, data);
+  
+  job.repeatEvery(data.sendingTypeOptions.interval, {skipImmediate: true});
+    
+  await job.save();
 }
 
 const jobsMap = {
