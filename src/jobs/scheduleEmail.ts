@@ -3,6 +3,7 @@ import { Agenda } from 'agenda';
 import { equals, groupBy, pathOr } from "ramda";
 import { EmailData } from "../interfaces";
 import { SEND_EMAIL, SEND_EMAIL_RECURRENTLY } from "../constants";
+import logger from '../logger';
 
 const scheduleEmail = async ({_id, receiver, content, sendingTypeOptions}: EmailData, agenda: Agenda) =>
   agenda.schedule(sendingTypeOptions.when, SEND_EMAIL, { _id, receiver, content});
@@ -55,13 +56,13 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
       const scheduled = forLater.map(async (el: EmailData) => {
         await createJob(el.sendingType)(el, agenda);
     
-        console.log('new email was scheduled', el.receiver);
+        logger.info('new email was scheduled', el.receiver);
         return el._id;
       });
 
       // if there is any scheduled emails
       if(equals(scheduled.length, 0)) {
-        console.log('no email for scheduling....');
+        logger.info('no email for scheduling....');
         return;
       }
 
@@ -72,11 +73,11 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
           { $set: { status : 'scheduled' } },
           { multi: true }
         ).then(result => {
-          console.log('status updated to schedule', result.modifiedCount);
+          logger.info('status updated to schedule', result.modifiedCount);
         });
       });
     } catch(e) {
-      console.log('error', e);
+      logger.error('scheduling an email campaign error', e);
     }
   });
 }

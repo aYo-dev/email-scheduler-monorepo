@@ -2,6 +2,7 @@ import { Agenda } from 'agenda';
 import  config from '../config';
 import jobs from './jobs';
 import { connect } from 'mongoose';
+import logger from './logger';
 
 connect(config.db);
 
@@ -17,11 +18,11 @@ scheduler
   .on('ready', () => {
     scheduler.every('5 seconds', 'schedule new email campaign');
     scheduler.start();
-    console.log("Agenda started!")
+    logger.info('Agenda started!');
   })
-  .on('error', () => console.log("Agenda connection error!"))
+  .on('error', () =>logger.error("Agenda connection error!"))
   .on('success:send email', (job) => {
-    console.log(`Sent Email Successfully to ${job.attrs.data.receiver}`);
+    logger.info(`Sent Email Successfully to ${job.attrs.data.receiver}`);
   });
 
 jobs.forEach(job => job(scheduler));

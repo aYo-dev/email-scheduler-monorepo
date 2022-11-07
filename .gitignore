@@ -6,3 +6,4 @@ npm-debug.log*
 config/.DS_Store
 logs/*
 .env.development
+*.log

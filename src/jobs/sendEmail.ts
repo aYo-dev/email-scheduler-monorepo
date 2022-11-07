@@ -1,6 +1,7 @@
 import { Email } from "../models/email.model";
 import { Agenda } from 'agenda';
 import { SEND_EMAIL } from '../constants';
+import logger from '../logger';
 
 /**
  * Send Email definition - send an email and update it's status if the campaign is completed 
@@ -13,6 +14,6 @@ export const sendEmailDefinition = (agenda: Agenda) => {
       { $set: { status : 'completed' } },
     );
 
-    console.log('completed', sentEmail);
+    logger.info('email campaign completed', sentEmail);
   });
 };

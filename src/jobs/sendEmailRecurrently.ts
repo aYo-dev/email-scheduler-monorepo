@@ -2,6 +2,7 @@ import { Email } from "../models/email.model";
 import { Agenda } from 'agenda';
 import { SEND_EMAIL_RECURRENTLY } from '../constants';
 import dayjs from 'dayjs';
+import logger from '../logger';
 
 const isExpired = (date: string) => dayjs().isAfter(date);
 
@@ -22,10 +23,10 @@ export const sendEmailRecurrentlyDefinition = (agenda: Agenda) => {
           { $set: { status : 'completed' } },
         ),
         agenda.cancel({ _id:  job.attrs._id}),
-      ]).then(() => console.log(`campaign with id ${job.attrs._id} expired`, job.attrs.data.receiver))
+      ]).then(() => logger.info(`campaign with id ${job.attrs._id} expired`, job.attrs.data.receiver))
     }
 
     // TODO: send email
-    console.log(`email from campaign ${job.attrs._id} was send`, job.attrs.data.receiver);
+    logger.info(`email from campaign ${job.attrs._id} was send`, job.attrs.data.receiver);
   });
 };
