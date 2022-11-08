@@ -15,7 +15,7 @@ export const emailSchema = new Schema({
   sendingType: {
     type: String,
     default: 'now',
-    enum: ['schedule', 'every', 'now']
+    enum: ['schedule', 'recurrently', 'now']
   },
   sendingTypeOptions: {
     when: Date,
@@ -23,6 +23,7 @@ export const emailSchema = new Schema({
       type: Number,
     },
     end: Date,
+    interval: String,
   },
   status: {
     type: String,
