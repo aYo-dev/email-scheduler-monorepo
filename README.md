@@ -4,7 +4,7 @@ Email Sender is microservice written on Node.js and Typescript, which use Agenda
 
 ## Tech Stack 
 
-* [Node.js][node], [Agenda.js][agenda], [Typescript][typescript] - core platform and dev tools
+* [Node.js][node], [Agenda.js][agenda], [Typescript][typescript], [Mailgun][mailgun] - core platform and dev tools
 * [MongoDB][mongodb], [Mongoose][mongoose] — DB and db tools
 
 ## Getting Started
@@ -21,7 +21,9 @@ then install node packages
 yarn install
 ```
 
-and you can run the project 
+in `.env.production` must be added mailgun `domain` and `api key` values
+
+and then  you can run the project 
 
 ```
 yarn start
@@ -32,3 +34,4 @@ yarn start
 [agenda]: https://github.com/agenda/agenda
 [mongoose]: https://mongoosejs.com
 [mongodb]: https://www.mongodb.com
+[mailgun]: https://www.mailgun.com
