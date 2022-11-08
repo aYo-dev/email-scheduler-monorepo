@@ -1,18 +1,19 @@
 import dayjs from 'dayjs';
 import { timeFormat } from '../constants';
-import { Actions } from '../enums';
+import { Actions, EndTypes, SendingTypes } from '../enums';
 import { Action } from '../interfaces';
 
 export const formInitialState = {
   selectedDays: [],
-  endType: 'never',
+  endType: EndTypes.never,
   end: '',
   receiver: '',
   content: '',
-  sendingType: 'now',
+  sendingType: SendingTypes.now,
   when: null,
   endDate: null,
   repeatAt: dayjs().format(timeFormat),
+  occurrences: 1,
 };
 
 export const formReducer = (state: typeof formInitialState, action: Action) => {

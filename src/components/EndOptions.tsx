@@ -13,8 +13,13 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { equals } from 'ramda';
 import { dateFormat } from '../constants';
 import { EndSelectProps } from '../interfaces';
+import { EndTypes } from '../enums';
 
-export default function EndOptions({onEndTypeChange, handleEndDateChange}: EndSelectProps) {
+export default function EndOptions({
+  onEndTypeChange,
+  handleEndDateChange,
+  handleOccurncesChange,
+}: EndSelectProps) {
   const [endType, setEndType] = useState('never');
   const [occurrences, setOccurrences] = useState(1);
   const [date, setDate] = useState<string | null>(null);
@@ -23,6 +28,16 @@ export default function EndOptions({onEndTypeChange, handleEndDateChange}: EndSe
     onEndTypeChange(event.target.value);
     setEndType(event.target.value);
   };
+
+  const onEndDateChange = (value: string | null) => {
+    handleEndDateChange(value);
+    setDate(value);
+  }
+
+  const onOccurrencesChange = (value: number) => {
+    handleOccurncesChange(value);
+    setOccurrences(value);
+  }
 
   const showOccurrencesInput = useMemo(() => equals('after', endType), [endType])
   const showDatePicker = useMemo(() => equals('on', endType), [endType])
@@ -37,9 +52,9 @@ export default function EndOptions({onEndTypeChange, handleEndDateChange}: EndSe
             label='Ends'
             onChange={handleEndChange}
           >
-            <MenuItem value='never'>Never</MenuItem>
-            <MenuItem value='on'>On</MenuItem>
-            <MenuItem value='after'>After</MenuItem>
+            <MenuItem value={EndTypes.never}>Never</MenuItem>
+            <MenuItem value={EndTypes.on}>On</MenuItem>
+            <MenuItem value={EndTypes.after}>After</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -47,9 +62,8 @@ export default function EndOptions({onEndTypeChange, handleEndDateChange}: EndSe
         <DatePicker
           disablePast
           value={date}
-          openTo="year"
           inputFormat={dateFormat}
-          onChange={handleEndDateChange}
+          onChange={onEndDateChange}
           renderInput={(params) => <TextField {...params} sx={{width: '100%', minWidth: '190px'}} />}
           views={['month', 'day']}
         />
@@ -62,7 +76,7 @@ export default function EndOptions({onEndTypeChange, handleEndDateChange}: EndSe
           label="Occurrences"
           name="occurrences"
           value={occurrences}
-          onChange={(e) => setOccurrences(parseInt(e.target.value))}
+          onChange={(e) => onOccurrencesChange(parseInt(e.target.value))}
         />
       </Box>
       }
