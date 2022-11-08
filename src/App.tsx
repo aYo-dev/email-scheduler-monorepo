@@ -11,7 +11,7 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Header />
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} justifyContent="center">
             <Grid item xs={6} sx={{margin: 4}}>
                 <EmailScheduleForm />
             </Grid>
