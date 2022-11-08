@@ -15,3 +15,5 @@ export interface RepeatProps {
   handleTimeChange: (time:  string | null) => void;
   values: string[],
 }
+
+export type FormErrors = Record<string, Record<string, string>>;

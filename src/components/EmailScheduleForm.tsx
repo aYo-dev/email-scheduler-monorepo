@@ -11,17 +11,27 @@ import {
   Typography,
 } from "@mui/material";
 import { equals } from "ramda";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useApi } from "../hooks/useApi";
 import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
 import { formInitialState, formReducer } from "../reducers";
-import { Action } from "../interfaces";
+import { Action, FormErrors } from "../interfaces";
 import { Actions } from "../enums";
+import { MailValidator } from '../services';
+import { ValidationError } from "class-validator";
+
+const mapFormErrors = (feedback: ValidationError[]) => feedback.reduce((acc, el) => {
+    return {
+      ...acc, 
+      [el.property]: el.constraints,
+    }
+  }, {});
 
 export const EmailScheduleForm = () => {
   const [state, dispatch] = useReducer(formReducer, formInitialState);
+  const [errors, setErrors] = useState<null | FormErrors>(null);
 
   const {
     isLoading,
@@ -30,9 +40,23 @@ export const EmailScheduleForm = () => {
     responseData,
   } = useApi(null);
 
-  const onSubmit = () => {
+  const onSubmit = async() => {
+    const { content, receiver, sendingType } = state;
 
-    // TODO: validate requestData first
+    const feedback = await new MailValidator({
+      content,
+      receiver,
+      sendingType,
+    }).validate();
+
+    if(feedback.length > 0) {
+      const errors = mapFormErrors(feedback);
+
+      setErrors(errors);
+      return;
+    }
+
+    setErrors(null);
     sendRequest({
       url: `http://localhost:3006/email`,
       method: 'post',
@@ -71,6 +95,8 @@ export const EmailScheduleForm = () => {
           variant="outlined"
           type="email"
         />
+        { errors?.receiver?.isEmail &&<Typography color="error" variant="body2">{errors?.receiver?.isEmail}</Typography> }
+        { errors?.receiver?.isNotEmpty &&<Typography color="error" variant="body2">{errors?.receiver?.isNotEmpty}</Typography> }
         <TextField
           label="Email content"
           value={state.content}
@@ -78,6 +104,7 @@ export const EmailScheduleForm = () => {
           multiline
           rows={6}
         />
+        { errors?.content?.isNotEmpty &&<Typography color="error" variant="body2">{errors?.content?.isNotEmpty}</Typography> }
       </Stack>
       <Box marginTop={2}>
         <FormControl>
