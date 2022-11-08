@@ -18,9 +18,10 @@ import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
 import { formInitialState, formReducer } from "../reducers";
 import { Action, FormErrors } from "../interfaces";
-import { Actions } from "../enums";
+import { Actions, SendingTypes } from "../enums";
 import { MailValidator } from '../services';
 import { ValidationError } from "class-validator";
+import { SuccessSnackBar } from "./SuccessSnackBar";
 
 const mapFormErrors = (feedback: ValidationError[]) => feedback.reduce((acc, el) => {
     return {
@@ -32,6 +33,7 @@ const mapFormErrors = (feedback: ValidationError[]) => feedback.reduce((acc, el)
 export const EmailScheduleForm = () => {
   const [state, dispatch] = useReducer(formReducer, formInitialState);
   const [errors, setErrors] = useState<null | FormErrors>(null);
+  const [showSuccessMsg, toggleSuccessMsg] = useState(false);
 
   const {
     isLoading,
@@ -46,7 +48,6 @@ export const EmailScheduleForm = () => {
     const feedback = await new MailValidator({
       content,
       receiver,
-      sendingType,
     }).validate();
 
     if(feedback.length > 0) {
@@ -58,17 +59,18 @@ export const EmailScheduleForm = () => {
 
     setErrors(null);
     sendRequest({
-      url: `http://localhost:3006/email`,
+      url: `${process.env.REACT_APP_API_URL}/email`,
       method: 'post',
       data: state,
     });
   }
 
   useEffect(() => {
-    // TODO: show proper message
-    console.log('response', responseData);
+    if(isError || !responseData) return;
+
+    toggleSuccessMsg(true);
     reset();
-  }, [responseData]);
+  }, [responseData, isError, responseData]);
 
   const reset = () => {
     dispatch({type: Actions.reset});
@@ -88,6 +90,7 @@ export const EmailScheduleForm = () => {
   return (
     <>
       <Stack spacing={2}>
+        <SuccessSnackBar open={showSuccessMsg} handleClose={toggleSuccessMsg}/>
         <TextField
           label="Receiver"
           value={state.receiver}
@@ -116,9 +119,9 @@ export const EmailScheduleForm = () => {
             name="send-it"
             onChange={(e) => setState({sendingType: e.target.value})}
           >
-            <FormControlLabel value="now" control={<Radio />} label="Now" />
-            <FormControlLabel value="schedule" control={<Radio />} label="Schedule" />
-            <FormControlLabel value="recurrently" control={<Radio />} label="Recurrently" />
+            <FormControlLabel value={SendingTypes.now} control={<Radio />} label="Now" />
+            <FormControlLabel value={SendingTypes.schedule} control={<Radio />} label="Schedule" />
+            <FormControlLabel value={SendingTypes.recurrently} control={<Radio />} label="Recurrently" />
           </RadioGroup>
         </FormControl>
       </Box>
@@ -126,9 +129,9 @@ export const EmailScheduleForm = () => {
         <Typography>Repeat on:</Typography>
         <Repeat 
           handleDaysChange={handleDaysChange}
-          handleTimeChange={(v) => setState({repeatAt: v})}
-          values={state.selectedDays}/>
-        <EndSelect 
+          handleTimeChange={(v) => setState({repeatAt: v})}/>
+        <EndSelect
+          handleOccurncesChange={((occurrences) => setState({occurrences}))}
           onEndTypeChange={(endType) => setState({endType})}
           handleEndDateChange={(endDate) => setState({endDate})}
         />
@@ -144,7 +147,10 @@ export const EmailScheduleForm = () => {
         />
       </Box>}
       <Box marginTop={2}>
-        <Button variant="outlined" onClick={onSubmit}>Create</Button>
+        <Button 
+          variant="outlined"
+          disabled={isLoading}
+          onClick={onSubmit}>Create</Button>
       </Box>
     </>
   );
