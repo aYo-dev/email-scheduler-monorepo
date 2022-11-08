@@ -2,6 +2,9 @@
 
 Email Sender is microservice written on Node.js and Typescript, which use Agenda.js for mail campaigns scheduling. 
 
+Here could be find useful information about the whole [ecosystem][ecosystem] and related applications
+
+
 ## Tech Stack 
 
 * [Node.js][node], [Agenda.js][agenda], [Typescript][typescript], [Mailgun][mailgun] - core platform and dev tools
@@ -35,3 +38,4 @@ yarn start
 [mongoose]: https://mongoosejs.com
 [mongodb]: https://www.mongodb.com
 [mailgun]: https://www.mailgun.com
+[ecosystem]: https://gist.github.com/aYo-dev/2ee718fe2fda660d7562413437076efd
