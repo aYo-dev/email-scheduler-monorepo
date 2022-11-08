@@ -6,7 +6,6 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -17,49 +16,12 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useApi } from "../hooks/useApi";
 import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
-
-enum Actions {
-  update = 'UPDATE',
-  reset = 'RESET',
-}
-
-type Action = {
-  type: Actions;
-  payload?: Record<string, string | string[] | null>
-}
-
-const formInitialState = {
-  selectedDays: [''],
-  endType: 'never',
-  end: '',
-  receiver: '',
-  content: '',
-  sendingType: 'now',
-  when: null,
-}
-
-function reducer(state: typeof formInitialState, action: Action) {
-  switch (action.type) {
-    case Actions.update:
-      return ({
-        ...state,
-        ...action.payload,
-      });
-    case Actions.reset:
-      return formInitialState;
-    default:
-      throw new Error('Invalid action');
-  }
-}
-
+import { formInitialState, formReducer } from "../reducers";
+import { Action } from "../interfaces";
+import { Actions } from "../enums";
 
 export const EmailScheduleForm = () => {
-
-  const [state, dispatch] = useReducer(reducer, formInitialState);
-
-  // useEffect(() => {
-  //   console.log('state change', state);
-  // }, [state])
+  const [state, dispatch] = useReducer(formReducer, formInitialState);
 
   const {
     isLoading,
@@ -69,6 +31,7 @@ export const EmailScheduleForm = () => {
   } = useApi(null);
 
   const onSubmit = () => {
+
     // TODO: validate requestData first
     sendRequest({
       url: `http://localhost:3006/email`,
@@ -91,7 +54,7 @@ export const EmailScheduleForm = () => {
     dispatch({type: Actions.update, payload });
   }
 
-  const handleDayChange = (selectedDays: string[]) => {
+  const handleDaysChange = (selectedDays: string[]) => {
     setState({selectedDays});
   };
 
@@ -106,7 +69,6 @@ export const EmailScheduleForm = () => {
           value={state.receiver}
           onChange={(e) => setState({receiver: e.target.value})}
           variant="outlined"
-          sx={{width: '100%'}}
           type="email"
         />
         <TextField
@@ -119,10 +81,11 @@ export const EmailScheduleForm = () => {
       </Stack>
       <Box marginTop={2}>
         <FormControl>
-          <FormLabel id="demo-radio-buttons-group-label">Send it</FormLabel>
+          <FormLabel>Send it</FormLabel>
           <RadioGroup
             row
             defaultValue="now"
+            value={state.sendingType}
             name="send-it"
             onChange={(e) => setState({sendingType: e.target.value})}
           >
@@ -134,8 +97,14 @@ export const EmailScheduleForm = () => {
       </Box>
       {isRecurrently && <Box>
         <Typography>Repeat on:</Typography>
-        <Repeat handleChange={handleDayChange} values={state.selectedDays}/>
-        <EndSelect onEndTypeChange={(endType) => setState({endType})}/>
+        <Repeat 
+          handleDaysChange={handleDaysChange}
+          handleTimeChange={(v) => setState({repeatAt: v})}
+          values={state.selectedDays}/>
+        <EndSelect 
+          onEndTypeChange={(endType) => setState({endType})}
+          handleEndDateChange={(endDate) => setState({endDate})}
+        />
       </Box>}
       {isSchedule && <Box>
         <DateTimePicker

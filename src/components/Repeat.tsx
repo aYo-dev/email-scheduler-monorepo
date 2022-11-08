@@ -5,20 +5,14 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useMemo, useState } from 'react';
 import { isEmpty } from 'ramda';
 import dayjs, { Dayjs } from 'dayjs';
-
-
-type RepeatProps = {
-  handleDaysChange: (selectedDays: string[]) => void,
-  handleTimeChange: (time:  string | null) => void;
-  values: string[],
-
-}
+import { RepeatProps } from '../interfaces';
+import { timeFormat } from '../constants';
 
 export default function Repeat(props: RepeatProps) {
   const [value, setValue] = useState<Dayjs | null>(dayjs());
   const showTimePicker = useMemo(() => !isEmpty(props.values),[props.values]);
   const onTimeChange = (time: Dayjs | null) => {
-    const formated = dayjs(time).format('HH:mm');
+    const formated = dayjs(time).format(timeFormat);
     props.handleTimeChange(formated);
     setValue(time);
   }
