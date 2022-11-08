@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useReducer, useState } from "react";
+import { equals } from "ramda";
 import {
   Box,
   Button,
@@ -10,9 +12,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { equals } from "ramda";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import Fade from '@mui/material/Fade';
+import { ValidationError } from "class-validator";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+
 import { useApi } from "../hooks/useApi";
 import EndSelect from "./EndOptions";
 import Repeat from "./Repeat";
@@ -20,7 +23,6 @@ import { formInitialState, formReducer } from "../reducers";
 import { Action, FormErrors } from "../interfaces";
 import { Actions, SendingTypes } from "../enums";
 import { MailValidator } from '../services';
-import { ValidationError } from "class-validator";
 import { SuccessSnackBar } from "./SuccessSnackBar";
 
 const mapFormErrors = (feedback: ValidationError[]) => feedback.reduce((acc, el) => {
@@ -125,27 +127,31 @@ export const EmailScheduleForm = () => {
           </RadioGroup>
         </FormControl>
       </Box>
-      {isRecurrently && <Box>
-        <Typography>Repeat on:</Typography>
-        <Repeat 
-          handleDaysChange={handleDaysChange}
-          handleTimeChange={(v) => setState({repeatAt: v})}/>
-        <EndSelect
-          handleOccurncesChange={((occurrences) => setState({occurrences}))}
-          onEndTypeChange={(endType) => setState({endType})}
-          handleEndDateChange={(endDate) => setState({endDate})}
-        />
-      </Box>}
-      {isSchedule && <Box>
-        <DateTimePicker
-          renderInput={(props) => <TextField {...props} />}
-          label="DateTimePicker"
-          value={state.when}
-          onChange={(newValue) => {
-            setState({when: newValue});
-          }}
-        />
-      </Box>}
+      {isRecurrently && <Fade in={isRecurrently}>
+        <Box>
+          <Typography>Repeat on:</Typography>
+          <Repeat 
+            handleDaysChange={handleDaysChange}
+            handleTimeChange={(v) => setState({repeatAt: v})}/>
+          <EndSelect
+            handleOccurncesChange={((occurrences) => setState({occurrences}))}
+            onEndTypeChange={(endType) => setState({endType})}
+            handleEndDateChange={(endDate) => setState({endDate})}
+          />
+        </Box>
+      </Fade>}
+      {isSchedule && <Fade in={isSchedule}>
+        <Box>
+          <DateTimePicker
+            renderInput={(props) => <TextField {...props} />}
+            label="DateTimePicker"
+            value={state.when}
+            onChange={(newValue) => {
+              setState({when: newValue});
+            }}
+          />
+        </Box>
+      </Fade>}
       <Box marginTop={2}>
         <Button 
           variant="outlined"
