@@ -24,7 +24,7 @@ export const sendEmailRecurrentlyDefinition = (agenda: Agenda) => {
 
     // TODO: send email
     await sendEmail({
-      receiver: 'ayovcheff@gmail.com',
+      receiver: job.attrs.data.receiver,
       content: job.attrs.data.content,
     })
     logger.info(`email from campaign ${job.attrs._id} was send`, job.attrs.data.receiver);
