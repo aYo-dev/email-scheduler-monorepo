@@ -44,32 +44,32 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
       // also their workflow is different, their status must not be updated 
       // to `scheduled` because they are send immediately and in this case 
       // we don't need to do two db queries 
-      const result = groupBy(extractEmailWithEndingTypeNow, newEmails);  
+      const result = groupBy<EmailData>(extractEmailWithEndingTypeNow, newEmails);  
 
       // we need fallback variant because some of the groups could be empty
-      const forNow = pathOr([], ['forNow'], result);
-      const forLater = pathOr([], ['forLater'], result);
+      const forNow = pathOr<EmailData[]>([], ['forNow'], result);
+      const forLater = pathOr<EmailData[]>([], ['forLater'], result);
 
-      forNow.forEach(async (el: EmailData) => {
+      forNow.forEach(async (el) => {
         await createJob(el.sendingType)(el, agenda);
       });
 
-      const scheduled = forLater.map(async (el: EmailData) => {
-        await createJob(el.sendingType)(el, agenda);
-    
-        logger.info('new email was scheduled', el.receiver);
-        return el._id;
-      });
-
-      // if there is any scheduled emails
-      if(equals(scheduled.length, 0)) {
+      // notify if there isn't any emails for scheduling
+      if(equals(forLater.length, 0)) {
         logger.info('no email for scheduling....');
         return;
       }
 
+      const scheduled = forLater.map(async (el: EmailData) => {
+        await createJob(el.sendingType)(el, agenda);
+    
+        logger.info('new email was scheduled for email:', el.receiver);
+        return el._id;
+      });
+
       await Promise.all(scheduled).then(ids => {
         // when emails are successfully scheduled their status must be changed to `scheduled`
-        mailSevice.updateStatusMany(ids, 'scheduled').then(result => {
+        mailSevice.bulkStatusUpdate(ids, 'scheduled').then(result => {
           logger.info('status updated to schedule', result.modifiedCount);
         });
       });

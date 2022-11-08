@@ -9,7 +9,7 @@ export const updateStatus = async (_id: Types.ObjectId, status) => {
 };
 
 export const findNewEmails = async () => Email.find({status: 'new'});
-export const updateStatusMany = async (ids: Types.ObjectId[], status) => Email.updateMany(
+export const bulkStatusUpdate = async (ids: Types.ObjectId[], status) => Email.updateMany(
   { _id: { $in: ids } },
   { $set: { status } },
   { multi: true }
