@@ -1,12 +1,12 @@
-import * as express from 'express';
+import express from 'express';
 import { json, urlencoded } from 'body-parser';
 import { connect } from "mongoose";
 import { ifElse, equals } from 'ramda';
-import * as cors from 'cors';
+import  cors from 'cors';
 import { TryCatch } from 'lambda-ts';
 
 import { initializeRoutes } from './routes';
-import { Enviroments } from './enums/enviroments';
+import { Enviroments } from './enums';
 import  config from '../config';
 
 
