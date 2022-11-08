@@ -1,11 +1,10 @@
-import { Email } from "../models/email.model";
 import { Agenda } from 'agenda';
 import { SEND_EMAIL_RECURRENTLY } from '../constants';
 import dayjs from 'dayjs';
 import logger from '../logger';
+import { updateStatus } from '../services/email.service';
 
 const isExpired = (date: string) => dayjs().isAfter(date);
-
 
 /**
  * Send Email Recurrently definition - send an email and update it's status if the campaign is completed 
@@ -16,12 +15,8 @@ export const sendEmailRecurrentlyDefinition = (agenda: Agenda) => {
     // if endDate is before now the campaign is expired and the job must be canceled 
     // and the status of the email must be updated to 'complete'
     if(isExpired(job.attrs.data.sendingTypeOptions.endDate)){
-      
       Promise.all([
-        Email.updateOne(
-          {_id: job.attrs.data._id},
-          { $set: { status : 'completed' } },
-        ),
+        updateStatus(job.attrs.data._id, 'completed'),
         agenda.cancel({ _id:  job.attrs._id}),
       ]).then(() => logger.info(`campaign with id ${job.attrs._id} expired`, job.attrs.data.receiver))
     }
