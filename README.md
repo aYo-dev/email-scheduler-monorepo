@@ -2,6 +2,8 @@
 
 Email Scheduler API is Node.js, Typescript, MongoDB API
 
+Here could be find useful information about the whole [ecosystem][ecosystem] and related applications
+
 ## Tech Stack 
 
 * [Node.js][node], [Express][express], [Yarn][yarn], [Typescript][typescript] - core platform and dev tools
@@ -41,3 +43,4 @@ yarn test
 [mongodb]: https://www.mongodb.com
 [supertest]: https://www.npmjs.com/package/supertest
 [jest]: https://jestjs.io
+[ecosystem]: https://gist.github.com/aYo-dev/2ee718fe2fda660d7562413437076efd
