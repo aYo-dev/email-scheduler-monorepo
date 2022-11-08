@@ -10,19 +10,26 @@ import { timeFormat } from '../constants';
 
 export default function Repeat(props: RepeatProps) {
   const [value, setValue] = useState<Dayjs | null>(dayjs());
-  const showTimePicker = useMemo(() => !isEmpty(props.values),[props.values]);
+  const [days, setDays] = useState<string[]>([]);
+  const showTimePicker = useMemo(() => !isEmpty(days),[days]);
+  
   const onTimeChange = (time: Dayjs | null) => {
     const formated = dayjs(time).format(timeFormat);
     props.handleTimeChange(formated);
     setValue(time);
   }
 
+  const onDaysChanged = (_: React.MouseEvent, value: string[]) => {
+    setDays(value);
+    props.handleDaysChange(value)
+  }
+
   return (
     <Box>
       <Box>
         <ToggleButtonGroup size="small" 
-          value={props.values}
-          onChange={(_, value) => props.handleDaysChange(value)}
+          value={days}
+          onChange={onDaysChanged}
         >
           <ToggleButton value="0" key="Sunday">S</ToggleButton>,
           <ToggleButton value="1" key="Monday">M</ToggleButton>,
