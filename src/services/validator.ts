@@ -8,7 +8,6 @@ import {
 interface MailData {
   content: string;
   receiver: string;
-  sendingType: string;
 }
 
 export class MailValidator {
