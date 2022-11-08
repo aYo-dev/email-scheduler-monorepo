@@ -2,6 +2,8 @@
 
 Email scheduler app is build with [React][react] and [Typescript][typescript].
 
+Here could be find useful information about the whole [ecosystem][ecosystem] and related applications
+
 ## Tech Stack 
 
 * [React][react], [Typescript][typescript], [Yarn][yarn]
@@ -32,3 +34,4 @@ The application will be opened in the browser with the following url: `http://12
 [typescript]: https://github.com/kriasoft/
 [node]: https://nodejs.org/
 [yarn]: https://yarnpkg.com/
+[ecosystem]: https://gist.github.com/aYo-dev/2ee718fe2fda660d7562413437076efd
