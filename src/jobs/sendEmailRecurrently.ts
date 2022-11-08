@@ -2,7 +2,8 @@ import { Agenda } from 'agenda';
 import { SEND_EMAIL_RECURRENTLY } from '../constants';
 import dayjs from 'dayjs';
 import logger from '../logger';
-import { updateStatus } from '../services/email.service';
+import { updateStatus } from '../services/mail.service';
+import { sendEmail } from '../services/mailgun.service';
 
 const isExpired = (date: string) => dayjs().isAfter(date);
 
@@ -22,6 +23,10 @@ export const sendEmailRecurrentlyDefinition = (agenda: Agenda) => {
     }
 
     // TODO: send email
+    await sendEmail({
+      receiver: 'ayovcheff@gmail.com',
+      content: job.attrs.data.content,
+    })
     logger.info(`email from campaign ${job.attrs._id} was send`, job.attrs.data.receiver);
   });
 };

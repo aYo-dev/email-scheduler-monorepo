@@ -1,18 +1,18 @@
-import { Email } from '../models/email.model';
 import { Agenda } from 'agenda';
 import { equals, groupBy, pathOr } from 'ramda';
 import { EmailData } from "../interfaces";
 import { SEND_EMAIL, SEND_EMAIL_RECURRENTLY } from '../constants';
 import logger from '../logger';
-import * as emailSevice from '../services/email.service';
+import * as mailSevice from '../services/mail.service';
 
+// when we need to schedule email for later
 const scheduleEmail = async ({_id, receiver, content, sendingTypeOptions}: EmailData, agenda: Agenda) =>
   agenda.schedule(sendingTypeOptions.when, SEND_EMAIL, { _id, receiver, content});
 
+// when want to send it immediately
 const sendNow = async ({_id, receiver, content}: EmailData, agenda: Agenda) => 
   agenda.now(SEND_EMAIL, { _id, receiver, content});
 
-// Create new recurring email campaign
 const sendRecurrently = async (data: EmailData, agenda: Agenda) => {
   const job = agenda.create(SEND_EMAIL_RECURRENTLY, data);
   job.repeatEvery(data.sendingTypeOptions.interval, {skipImmediate: true});
@@ -38,7 +38,7 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
   agenda.define('schedule new email campaign', {priority: 20},  async (job) => {
     try {
       // get all new emails which still are not scheduled 
-      const newEmails = await emailSevice.findNewEmails();
+      const newEmails = await mailSevice.findNewEmails();
 
       // with higher priority are emails which should be send immediately
       // also their workflow is different, their status must not be updated 
@@ -69,7 +69,7 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
 
       await Promise.all(scheduled).then(ids => {
         // when emails are successfully scheduled their status must be changed to `scheduled`
-        emailSevice.updateStatusMany(ids, 'scheduled').then(result => {
+        mailSevice.updateStatusMany(ids, 'scheduled').then(result => {
           logger.info('status updated to schedule', result.modifiedCount);
         });
       });
