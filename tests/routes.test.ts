@@ -1,5 +1,5 @@
 import { pathOr, pickAll } from 'ramda';
-import * as request from 'supertest';
+import request from 'supertest';
 import { server } from '../src/app';
 
 jest.useRealTimers();
@@ -19,9 +19,9 @@ describe("GET /", () => {
 describe("POST /emails", () => {
 	it("returns status code 200 if data is correct", async () => {
     const newEmail = {
-      content: 'Lorem ipsum dolor sit amet....',
-      receiver: 'jamesbond@dddd.vf',
-      schedule: 'test',
+      receiver: "ayovheff@gmail.com",
+      content: "hello, hello",
+      sendingType: "now",
     };
 
     const result =  await request(server)
@@ -29,7 +29,7 @@ describe("POST /emails", () => {
       .send(newEmail);
 
     const data = pathOr({}, ['body', 'data'], result); 
-    const emailData =  pickAll(['content', 'receiver', 'schedule'], data);
+    const emailData =  pickAll(['content', 'receiver', 'sendingType'], data);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toBeDefined();
@@ -40,7 +40,7 @@ describe("POST /emails", () => {
     const newEmail = {
       content: 'Lorem ipsum dolor sit amet....',
       receiver: 'jamesbond',
-      schedule: 'test',
+      sendingType: 'now',
     };
 
     const result =  await request(server)
@@ -56,7 +56,7 @@ describe("POST /emails", () => {
   it("returns status code 400 if any required field missing", async () => {
     const newEmail = {
       receiver: 'jamesbond',
-      schedule: 'test',
+      content: 'test',
     };
 
     const result =  await request(server)
