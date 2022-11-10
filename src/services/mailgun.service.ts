@@ -16,8 +16,6 @@ interface Data {
   content: string;
 }
 
-console.log('key', process.env.MAILGUN_API_KEY);
-
 export const sendEmail = (data: Data) => {
   return mg.
     messages.
@@ -26,7 +24,5 @@ export const sendEmail = (data: Data) => {
       to: data.receiver,
       subject: 'Hello from Email Scheduler',
       text: data.content,
-    }).
-    then(res => logger.info('email was send successfuly', res)).
-    catch(err => logger.error('mailgun error:', err));
+    });
 }
