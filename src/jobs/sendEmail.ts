@@ -10,12 +10,16 @@ import { sendEmail } from '../services/mailgun.service';
  */
 export const sendEmailDefinition = (agenda: Agenda) => {
   agenda.define(SEND_EMAIL, {priority: 20}, async (job) => {
-    await sendEmail({
-      receiver: job.attrs.data.receiver,
-      content: job.attrs.data.content,
-    })
-    const sentEmail = await updateStatus(job.attrs.data._id, 'completed');
+    try {
+      await sendEmail({
+        receiver: job.attrs.data.receiver,
+        content: job.attrs.data.content,
+      })
 
-    logger.info('email campaign completed', sentEmail);
+    } catch(e) {
+      console.log(e);
+    }
+    
+    await updateStatus(job.attrs.data._id, 'completed');
   });
 };

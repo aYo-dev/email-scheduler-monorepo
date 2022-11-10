@@ -22,11 +22,14 @@ export const sendEmailRecurrentlyDefinition = (agenda: Agenda) => {
       ]).then(() => logger.info(`campaign with id ${job.attrs._id} expired`, job.attrs.data.receiver))
     }
 
-    // TODO: send email
-    await sendEmail({
-      receiver: job.attrs.data.receiver,
-      content: job.attrs.data.content,
-    })
-    logger.info(`email from campaign ${job.attrs._id} was send`, job.attrs.data.receiver);
+    try {
+      await sendEmail({
+        receiver: job.attrs.data.receiver,
+        content: job.attrs.data.content,
+      })
+      logger.info(`email from campaign ${job.attrs._id} was send`, job.attrs.data.receiver);
+    } catch(e) {
+      logger.error('There is a problem with campaign:', job.attrs.data);
+    }
   });
 };
