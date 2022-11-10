@@ -7,6 +7,7 @@ import logger from './logger';
 connect(config.db);
 
 const scheduler = new Agenda({
+  lockLimit: 1,
   db: { 
     address: config.db,
     collection: 'agendaJobs',
@@ -22,9 +23,16 @@ scheduler
   })
   .on('error', () =>logger.error("Agenda connection error!"))
   .on('success:send email', (job) => {
-    logger.info(`Sent Email Successfully to ${job.attrs.data.receiver}`);
+    logger.info(`Email campign completed ${job.attrs.data.receiver}`);
   });
 
 jobs.forEach(job => job(scheduler));
 
-console.log({ jobs: scheduler._definitions });
+async function graceful() {
+  console.log("Shutting down gracefully...");
+  await scheduler.stop();
+  process.exit(0);
+}
+
+process.on("SIGTERM", graceful);
+process.on("SIGINT", graceful);
