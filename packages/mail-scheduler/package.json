@@ -1,7 +1,7 @@
 {
-  "name": "mail-scheduler",
+  "name": "@scheduler/mail-scheduler",
   "version": "1.0.0",
-  "description": "Mail scheduler API",
+  "description": "Mail scheduler Agenda microservice",
   "main": "src/app.ts",
   "scripts": {
     "build": "./node_modules/.bin/tsc",

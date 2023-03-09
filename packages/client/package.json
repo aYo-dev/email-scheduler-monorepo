@@ -1,5 +1,6 @@
 {
-  "name": "Email scheduler client app written on react.js",
+  "name": "@scheduler/client", 
+  "description": "Email scheduler client app written on React.js and TypeScript",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
