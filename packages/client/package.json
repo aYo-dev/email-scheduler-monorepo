@@ -3,6 +3,7 @@
   "description": "Email scheduler client app written on React.js and TypeScript",
   "version": "0.1.0",
   "private": true,
+  "author": "Asen Yovchev <ayovcheff@gmail.com>",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",

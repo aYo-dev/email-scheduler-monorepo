@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
+
 export interface EmailData {
+  _id: Types.ObjectId;
   content: string;
   receiver: string;
   schedule: string;

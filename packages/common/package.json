@@ -1,0 +1,9 @@
+{
+  "name": "@scheduler/common",
+  "version": "1.0.0",
+  "description": "common modules",
+  "main": "index.ts",
+  "author": "Asen Yovchev <ayovcheff@gmail.com>",
+  "license": "MIT",
+  "private": true
+}

@@ -3,7 +3,7 @@ import {
   validate,
   IsEmail,
 } from 'class-validator';
-import { EmailData } from '../interfaces';
+import { EmailData } from '@scheduler/common';
 
 export class EmailValidator {
   constructor(emailData: EmailData) {

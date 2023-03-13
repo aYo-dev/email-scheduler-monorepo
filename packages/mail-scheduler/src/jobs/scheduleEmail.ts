@@ -1,6 +1,6 @@
 import { Agenda } from 'agenda';
 import { equals, groupBy, pathOr } from 'ramda';
-import { EmailData } from "../interfaces";
+import { EmailData } from "@scheduler/common";
 import { SEND_EMAIL, SEND_EMAIL_RECURRENTLY } from '../constants';
 import logger from '../logger';
 import * as mailSevice from '../services/mail.service';

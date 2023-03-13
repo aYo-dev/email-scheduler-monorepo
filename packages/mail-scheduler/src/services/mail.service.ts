@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { Email } from "../models/email.model"
+import { Email } from "@scheduler/common"
 
 export const updateStatus = async (_id: Types.ObjectId, status) => {
   return Email.updateOne(

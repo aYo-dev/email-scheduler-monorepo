@@ -45,7 +45,7 @@ export const EmailScheduleForm = () => {
   } = useApi(null);
 
   const onSubmit = async() => {
-    const { content, receiver, sendingType } = state;
+    const { content, receiver } = state;
 
     const feedback = await new MailValidator({
       content,
@@ -72,7 +72,7 @@ export const EmailScheduleForm = () => {
 
     toggleSuccessMsg(true);
     reset();
-  }, [responseData, isError, responseData]);
+  }, [responseData, isError]);
 
   const reset = () => {
     dispatch({type: Actions.reset});

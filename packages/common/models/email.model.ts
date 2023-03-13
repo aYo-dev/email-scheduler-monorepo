@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { EmailData } from '../interfaces';
+import { EmailData } from '@scheduler/common';
 
 export const emailSchema = new Schema({
   content: {
@@ -19,7 +19,7 @@ export const emailSchema = new Schema({
   },
   sendingTypeOptions: {
     when: Date,
-    occurrences : {
+    occurences : {
       type: Number,
     },
     end: Date,

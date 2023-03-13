@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { equals, ifElse } from 'ramda';
 import { EndTypes, SendingTypes } from '../enums';
-import { Email } from '../models/email.model';
+import { Email } from '@scheduler/common';
 import { EmailValidator } from '../services/email.validator';
 import { createCron, calculateEndDate } from '../util';
 
