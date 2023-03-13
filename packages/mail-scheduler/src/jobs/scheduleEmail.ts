@@ -63,7 +63,7 @@ export const scheduleEmailCampaign = (agenda: Agenda) => {
       const scheduled = forLater.map(async (el: EmailData) => {
         await createJob(el.sendingType)(el, agenda);
     
-        logger.info('new email was scheduled for email:', el.receiver);
+        logger.info('new email was scheduled for:', el.receiver);
         return el._id;
       });
 
